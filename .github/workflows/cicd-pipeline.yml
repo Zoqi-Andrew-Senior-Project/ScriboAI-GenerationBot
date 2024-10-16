@@ -20,20 +20,18 @@ jobs:
           echo "🛻 Pulling changes......."
           echo "+++++++++++++++"
           
-          cd ~/ScriboAI-GenerationBot/
           git pull || { echo -e " ++++++++++++++++++++++++\n❌ Error pulling changes! ❌ \n ++++++++++++++++++++++++"; exit 1; }
           
           echo "+++++++++++++++"
           echo "🏗️ Building consumer-backend image......."
           echo "+++++++++++++++"
           
-          cd ~/ScriboAI-GenerationBot/bot_backend
+          cd ~/bot_backend
           docker build -t bot-backend:latest . || { echo -e " ++++++++++++++++++++++++++++++++++++++++++++++++\n❌ Error building consumer-backend image! ❌ \n ++++++++++++++++++++++++++++++++++++++++++++++++"; exit 1; }
           
           echo "+++++++++++++++"
           echo "🏗️ Composing docker setup......."
           echo "+++++++++++++++"
           
-          cd ~/ScriboAI-GenerationBot/
           docker compose down || { echo -e " ++++++++++++++++++++++++\n❌ Error composing down! ❌ \n ++++++++++++++++++++++++"; exit 1; }
           docker compose up -d || { echo -e " ++++++++++++++++++++++++\n❌ Error composing up! ❌ \n ++++++++++++++++++++++++"; exit 1; }
