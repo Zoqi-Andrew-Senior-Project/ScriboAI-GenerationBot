@@ -1,37 +1,49 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches:
-      - main
+      - main  # Trigger the workflow on pushes to the main branch
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v1.1.0
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: |
-          echo "+++++++++++++++"
-          echo "🛻 Pulling changes......."
-          echo "+++++++++++++++"
-          
-          git pull || { echo -e " ++++++++++++++++++++++++\n❌ Error pulling changes! ❌ \n ++++++++++++++++++++++++"; exit 1; }
-          
-          echo "+++++++++++++++"
-          echo "🏗️ Building consumer-backend image......."
-          echo "+++++++++++++++"
-          
-          cd ~/bot_backend
-          docker build -t bot-backend:latest . || { echo -e " ++++++++++++++++++++++++++++++++++++++++++++++++\n❌ Error building consumer-backend image! ❌ \n ++++++++++++++++++++++++++++++++++++++++++++++++"; exit 1; }
-          
-          echo "+++++++++++++++"
-          echo "🏗️ Composing docker setup......."
-          echo "+++++++++++++++"
-          
-          docker compose down || { echo -e " ++++++++++++++++++++++++\n❌ Error composing down! ❌ \n ++++++++++++++++++++++++"; exit 1; }
-          docker compose up -d || { echo -e " ++++++++++++++++++++++++\n❌ Error composing up! ❌ \n ++++++++++++++++++++++++"; exit 1; }
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            echo "+++++++++++++++"
+            echo "🛻 Pulling changes......."
+            echo "+++++++++++++++"
+
+            cd ~/bot_backend
+            
+            # Set tracking branch to avoid pull issues
+            git fetch origin
+            git branch --set-upstream-to=origin/main main || echo "Tracking branch already set."
+            
+            # Pull latest changes
+            git pull origin main || { echo -e " ++++++++++++++++++++++++\n❌ Error pulling changes! ❌ \n ++++++++++++++++++++++++"; exit 1; }
+
+            echo "+++++++++++++++"
+            echo "🏗️ Building bot-backend image......."
+            echo "+++++++++++++++"
+            
+            # Build Docker image for bot-backend
+            docker build -t bot-backend:latest . || { echo -e " ++++++++++++++++++++++++++++++++++++++++++++++++\n❌ Error building bot-backend image! ❌ \n ++++++++++++++++++++++++++++++++++++++++++++++++"; exit 1; }
+
+            echo "+++++++++++++++"
+            echo "🏗️ Composing docker setup......."
+            echo "+++++++++++++++"
+            
+            # Bring down and bring up Docker containers
+            docker compose down || { echo -e " ++++++++++++++++++++++++\n❌ Error composing down! ❌ \n ++++++++++++++++++++++++"; exit 1; }
+            docker compose up -d || { echo -e " ++++++++++++++++++++++++\n❌ Error composing up! ❌ \n ++++++++++++++++++++++++"; exit 1; }
+
