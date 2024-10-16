@@ -1,20 +1,38 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
+  backend:
+    build: ./bot_backend
     ports:
       - "8000:8000"
+    networks:
+      - app-network
     depends_on:
       - mongo
-    volumes:
-      - .:/app
+    environment:
+      - MONGO_URL=mongodb://mongo:27017 
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
   mongo:
-    image: mongo
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
