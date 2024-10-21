@@ -1,10 +1,12 @@
 # Dockerfile
-FROM python:3.9-slim
+FROM python:3.9
 
-WORKDIR /app
+WORKDIR /code
 
-COPY ./app /app
+COPY ./requirements.txt /code/requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--bind", "0.0.0.0:8000"]
+COPY ./app /code/app
+
+CMD ["fastapi", "run", "--workers", "4", "app/main.py", "--proxy-headers",  "--port", "8000"]
