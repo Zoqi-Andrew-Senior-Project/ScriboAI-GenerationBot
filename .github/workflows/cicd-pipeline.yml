@@ -26,7 +26,7 @@ jobs:
           echo "🏗️ Building consumer-backend image......."
           echo "+++++++++++++++"
           
-          cd ~/Scribo-GenerationBot/bot_backend
+          cd ~/ScriboAI-GenerationBot/bot_backend
           docker build -t bot-backend:latest . || { echo -e " ++++++++++++++++++++++++++++++++++++++++++++++++\n❌ Error building consumer-backend image! ❌ \n ++++++++++++++++++++++++++++++++++++++++++++++++"; exit 1; }
           
           echo "+++++++++++++++"
