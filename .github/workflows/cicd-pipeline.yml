@@ -19,7 +19,7 @@ jobs:
           echo "🛻 Pulling changes......."
           echo "+++++++++++++++"
           
-          cd ~/Scribo-GenerationBot
+          cd ~/ScriboAI-GenerationBot
           git pull || { echo -e " ++++++++++++++++++++++++\n❌ Error pulling changes! ❌ \n ++++++++++++++++++++++++"; exit 1; }
           
           echo "+++++++++++++++"
