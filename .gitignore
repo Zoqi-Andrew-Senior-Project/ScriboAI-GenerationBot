@@ -1,0 +1,3 @@
+bot_backend/app/__pycache__/
+bot_backend/app/routers/__pycache__/
+bot_backend/.venv/
