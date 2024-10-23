@@ -1,15 +1,11 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-
-class Prompt(BaseModel):
-    text: str
+from .routers import llm_functions
 
 app = FastAPI()
+
+app.include_router(llm_functions.router)
+
 
 @app.get("/")
 def read_root():
     return {"message": " Hello Scribo"}
-
-@app.get("/api/generate/")
-def generate_script(prompt: Prompt):
-    return {"response": prompt}
